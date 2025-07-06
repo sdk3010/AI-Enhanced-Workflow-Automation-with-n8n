@@ -1,0 +1,93 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1I6xmml2KbZixFCTbDQek_f91CA6eFUfAIg9GobmRazQ/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 304700461,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1I6xmml2KbZixFCTbDQek_f91CA6eFUfAIg9GobmRazQ/edit#gid=304700461"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -100
+      ],
+      "id": "096243f4-2c5e-4daa-b550-faa3a059f566",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "c6MS5IenkM4XJN0X",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Application Response",
+        "emailType": "text",
+        "message": "=Hi, {{ $json.Name }} we have received your response for SDI Role!!!.\nThank You",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -20,
+        -100
+      ],
+      "id": "fbf31603-6d39-48ee-8683-169da5520d71",
+      "name": "Send a message",
+      "webhookId": "544c0700-154b-4b76-8386-03e567c72b28",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gFc8k9dvQw7gpoSv",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "af5d540f-e86c-40e0-8501-02ed5a46f3fb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6bcb67d97419e78071dc44786e0659a24f7fc82568b346b0cd440aad763b13fc"
+  },
+  "id": "EOns7KmrZya52c1b",
+  "tags": []
+}
