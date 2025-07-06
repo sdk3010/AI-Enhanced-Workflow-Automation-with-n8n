@@ -1,0 +1,169 @@
+{
+  "name": "tools",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        60
+      ],
+      "id": "a75fcaba-8170-45a2-8f47-63b4c4f332e5",
+      "name": "When chat message received",
+      "webhookId": "465bdb3a-c947-43e8-8744-fac164b6433f"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        200,
+        280
+      ],
+      "id": "74995037-47e3-4ec5-bab3-0d902ec7267d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "N4br2lGqpgkfaohR",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Goal: Send an email using the Gmail tool, extracting the recipient’s email and message details from chatInput.\n\nSteps:\nCheck if chatInput contains an email:\n\nIf email is present, extract and use it.\n\nIf email is NOT present:\n\nExtract the name from {{ $json.chatInput }}.\n\nUse the Google Sheets tool to search for the email based on the name.\n\nThe sheet has:\n\nColumn A: \"Name\"\n\nColumn B: \"Email\"\n\nExample data:\n\nmarkdown\nCopy\nEdit\nName        | Email\n-------------------------------\nanil kumar  | anilkumartamada69@gmail.com\nkishore     | aniltamada2004@gmail.com\nFind the row where the \"Name\" matches the extracted name and fetch the corresponding \"Email\".\n\nExtract the following from chatInput:\n\nSubject of the email.\n\nContent/Body of the email.\n\nSend the email:\n\nUse the Gmail Node (already connected as a tool).\n\nUse the extracted email, subject, and content.\n\nSummary of Tool Usage:\nGoogle Sheets Tool: Lookup email by name.\n\nGmail Tool: Send the extracted email."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        300,
+        60
+      ],
+      "id": "32a6c6f1-4621-4a45-98b9-a4abb6b63d78",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $fromAI(\"emailRecepient\") }}",
+        "subject": "={{ $fromAI(\"emailSubject\") }}",
+        "emailType": "text",
+        "message": "={{ $fromAI(\"emailcontent\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        460,
+        300
+      ],
+      "id": "b9c4ed59-bec4-473f-8a09-0eac6f73257b",
+      "name": "Send a message in Gmail",
+      "webhookId": "572d6606-d32f-425a-9945-ebc154532065",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "sobXCfEbIaVCDThq",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=if email is not given in the chatInput(\"{{ $json.chatInput }}\") use this tool, extract the name from the chatInput and search for the name in this sheet and take the corresponding email,the structure in this sheet is , first columsn in \"Name\" and the second column in \"Email\" ",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1oxV47y805pIyUxNTzpMtHg1I8_SHRg7mNjyqqWoiFDI/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oxV47y805pIyUxNTzpMtHg1I8_SHRg7mNjyqqWoiFDI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        660,
+        280
+      ],
+      "id": "da34577d-7100-4d11-9b07-1fb5ef45f7fd",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uRLyNs6RZM5mncB9",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3a9c9873-fea1-4d20-84eb-497a2171996b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7235415bce492f97eefaff01c274a15bd8b461aac92a4174a64a76310e052f7f"
+  },
+  "id": "fNgChWfSz4G0Q6D2",
+  "tags": []
+}
